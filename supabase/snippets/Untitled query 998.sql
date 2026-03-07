@@ -1,2 +1,2 @@
 INSERT INTO todos (task)
-VALUES ('Going to market');
+VALUES ('Going to uni');

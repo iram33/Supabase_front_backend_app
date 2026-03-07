@@ -38,10 +38,20 @@ const fetchTasks = async () => {
     if (data && data.length > 0) {
       data.forEach(task => {
         const li = document.createElement("li");
-        li.textContent = task.task;
+        li.innerHTML = `
+          <div class="task-content">
+            <span class="task-text">${task.task}</span>
+            <span class="meta">Task #${task.id}</span>
+          </div>
+          <div class="task-actions">
+            <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+          </div>
+        `;
         li.dataset.id = task.id;
         taskList.appendChild(li);
       });
+    } else {
+      document.getElementById('emptyState').style.display = 'block';
     }
   } catch (err) {
     console.error("Unexpected error fetching tasks:", err);
@@ -76,11 +86,36 @@ const addTask = async () => {
     
     taskInput.value = "";
     taskInput.focus();
+    document.getElementById('emptyState').style.display = 'none';
     await fetchTasks();
   } catch (err) {
     console.error("Unexpected error adding task:", err);
   } finally {
     addButton.disabled = false;
+  }
+};
+
+// Delete a task from Supabase
+const deleteTask = async (taskId) => {
+  if (!supabase) {
+    console.error("Supabase not initialized");
+    return;
+  }
+  
+  try {
+    const { error } = await supabase
+      .from("todos")
+      .delete()
+      .eq("id", taskId);
+    
+    if (error) {
+      console.error("Error deleting task:", error.message);
+      return;
+    }
+    
+    await fetchTasks();
+  } catch (err) {
+    console.error("Unexpected error deleting task:", err);
   }
 };
 
@@ -101,3 +136,4 @@ taskInput?.addEventListener('keypress', (e) => {
 // expose functions for easier testing and legacy onclick handlers
 window.addTask = addTask;
 window.fetchTasks = fetchTasks;
+window.deleteTask = deleteTask;
