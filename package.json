@@ -1,5 +1,12 @@
 {
+  "scripts": {
+    "start": "serve ."
+  },
   "dependencies": {
     "jsdom": "^22.1.0"
+  },
+  "devDependencies": {
+    "pm2": "^6.0.14",
+    "serve": "^14.2.6"
   }
 }
